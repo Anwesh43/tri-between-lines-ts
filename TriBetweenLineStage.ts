@@ -1,5 +1,5 @@
 const nodes : number = 5
-const lines : number = 2
+const lines : number = 6
 const w : number = window.innerWidth
 const h : number = window.innerHeight
 const scGap : number = 0.05
@@ -14,7 +14,7 @@ const maxScale : Function = (scale : number, i : number, n : number) : number =>
 }
 
 const divideScale : Function = (scale : number, i : number, n : number) : number => {
-    return Math.min(0, maxScale(scale, i, n)) * n
+    return Math.min(1/n, maxScale(scale, i, n)) * n
 }
 
 const scaleFactor : Function = (scale : number) => Math.floor(scale / scDiv)
@@ -32,8 +32,8 @@ const drawParallelLines : Function = (context : CanvasRenderingContext2D, size :
     for (var i = 0; i < 2; i++) {
         const sf : number = 1 - 2 * i
         context.beginPath()
-        context.moveTo(-size, -size * sf)
-        context.lineTo(-size, -size * sf)
+        context.moveTo(-2 * size, -size * sf)
+        context.lineTo(2 * size, -size * sf)
         context.stroke()
     }
 }
@@ -43,6 +43,9 @@ const drawTBLNode : Function = (context : CanvasRenderingContext2D, i : number, 
     const sc1 : number = divideScale(scale, 0, 2)
     const sc2 : number = divideScale(scale, 1, 2)
     const xGap : number = (2 * size) / lines
+    context.lineCap = 'round'
+    context.lineWidth = Math.min(w, h) / strokeFactor
+    context.strokeStyle = color
     context.save()
     context.translate(gap * (i + 1), h/2)
     context.rotate(Math.PI/2 * sc2)
@@ -51,14 +54,14 @@ const drawTBLNode : Function = (context : CanvasRenderingContext2D, i : number, 
         const sc = divideScale(sc1, j, lines)
         const sf = 1 - 2 * (j % 2)
         context.save()
-        context.translate(-size + j * xGap, sf * size)
+        context.translate(-size + j * xGap, sf * size/2)
         context.beginPath()
         context.moveTo(0, 0)
         context.lineTo(xGap * sc, -sf * size * sc)
         context.stroke()
         context.restore()
     }
-    context.stroke()
+    context.restore()
 }
 
 class TriBetweenLineStage {
@@ -102,6 +105,7 @@ class State {
 
     update(cb : Function) {
         this.scale += updateScale(this.scale, this.dir, lines, 1)
+        console.log(this.scale)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
