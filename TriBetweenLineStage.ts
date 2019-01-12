@@ -200,3 +200,24 @@ class TriBetweenLine {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+    tbl : TriBetweenLine = new TriBetweenLine()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.tbl.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.tbl.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.tbl.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
