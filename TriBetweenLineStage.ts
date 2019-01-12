@@ -6,6 +6,8 @@ const scGap : number = 0.05
 const scDiv : number = 0.51
 const strokeFactor : number = 90
 const sizeFactor : number = 3
+const color : string = "#673AB7"
+const backColor : string = "#BDBDBD"
 
 const maxScale : Function = (scale : number, i : number, n : number) : number => {
     return Math.max(0, scale - i / n)
@@ -26,7 +28,7 @@ const updateScale : Function = (scale : number, dir : number, a : number, b : nu
     return mirrorValue(scale, a, b) * dir * scGap
 }
 
-const drawParallelLines : Function = (ctx : CanvasRenderingContext2D, size : number) {
+const drawParallelLines : Function = (context : CanvasRenderingContext2D, size : number) => {
     for (var i = 0; i < 2; i++) {
         const sf : number = 1 - 2 * i
         context.beginPath()
@@ -40,7 +42,7 @@ const drawTBLNode : Function = (context : CanvasRenderingContext2D, i : number, 
     const size : number = gap / (lines + 1)
     const sc1 : number = divideScale(scale, 0, 2)
     const sc2 : number = divideScale(scale, 1, 2)
-    const xgap : number = (2 * size) / lines
+    const xGap : number = (2 * size) / lines
     context.save()
     context.translate(gap * (i + 1), h/2)
     drawParallelLines(context, size/2)
@@ -55,4 +57,34 @@ const drawTBLNode : Function = (context : CanvasRenderingContext2D, i : number, 
         context.restore()
     }
     context.stroke()
+}
+
+class TriBetweenLineStage {
+    canvas : HTMLCanvasElement = document.createElement('canvas')
+    context : CanvasRenderingContext2D
+
+    initCanvas() {
+        this.canvas.width = w
+        this.canvas.height = h
+        this.context = this.canvas.getContext('2d')
+        document.body.appendChild(this.canvas)
+    }
+
+    render() {
+        this.context.fillStyle = backColor
+        this.context.fillRect(0, 0, w, h)
+    }
+
+    handleTap() {
+        this.canvas.onmousedown = () => {
+
+        }
+    }
+
+    static init() {
+        const stage : TriBetweenLineStage = new TriBetweenLineStage()
+        stage.initCanvas()
+        stage.render()
+        stage.handleTap()
+    }
 }
